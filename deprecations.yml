@@ -1,0 +1,26 @@
+---
+- name: Deprecation dashboard test data
+  hosts: localhost
+  gather_facts: false
+  vars:
+    install_packages: true
+    my_dict:
+      a: 1
+      b: 2
+    maybe_flag: maybe # invalid for | bool on newer core
+  tasks:
+    - name: Trigger with_dict deprecation
+      ansible.builtin.debug:
+        msg: '{{ item.key }}={{ item.value }}'
+      with_dict: '{{ my_dict }}'
+    - name: Trigger bare variable conditional
+      ansible.builtin.debug:
+        msg: bare conditional
+      when: install_packages
+    - name: Trigger bool filter coercion (core 2.19+)
+      ansible.builtin.debug:
+        msg: '{{ maybe_flag | bool }}'
+    - name: Trigger empty / odd conditional (core 2.19+)
+      ansible.builtin.debug:
+        msg: empty-ish when
+      when: ''
